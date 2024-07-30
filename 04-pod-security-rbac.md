@@ -166,11 +166,11 @@ rolebinding.rbac.authorization.k8s.io/create-pods created
 
 Using the devconf user, let's create a Pod in the secure-namespace Namespace:
 
-`kubectl --as devconf --as-group pod-creator run nginx-source --namespace secure-namespace --image nginx:1.27.0`
+`kubectl --as devconf --as-group pod-creator run nginx --namespace secure-namespace --image nginx:1.27.0`
 
 Output:
 ```shell
-pod/nginx-source created
+pod/nginx created
 ```
 Now we have a user than can create Pods in the secure-namespace Namespace.
 
