@@ -3,7 +3,9 @@
 ## Ingress and egress network policies are applied to all workloads in the cluster
 ## Default network policies within each namespace, selecting all pods, denying everything, are in place
 
-This step we will cover Kubernetes Security Checklist items under Network Security: Ingress and egress network policies are applied to all workloads in the cluster and Default network policies within each namespace, selecting all pods, denying everything, are in place.
+This step covers Kubernetes Security Checklist items under Network Security: 
+- Ingress and egress network policies are applied to all workloads in the cluster
+- Default network policies within each namespace, selecting all pods, denying everything, are in place
 
 ### Namespace and workload setup
 Create two namespaces and a workload in each namespace to test Network Policies.
