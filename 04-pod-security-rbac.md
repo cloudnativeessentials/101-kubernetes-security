@@ -1,20 +1,26 @@
 # Pod security
 ## RBAC rights to create, update, patch, delete workloads 
 
-Create a namespace
+This step covers the following Kubernetes Security Checklist item under Pod Security:
+-  RBAC rights to `create`, `update`, `patch`, `delete` workloads is only granted if necessary under the Pod Security category
 
-`kubectl create namespace secure-namespace`
+We will learn about Roles, ClusterRoles, RoleBindings, and ClusterRole bindings.
+
+1. Create a namespace
+
+`kubectl create namespace rbac-namespace`
 
 ```shell
-namespace/secure-namespace created
+namespace/rbac-namespace created
 ```
 
-
 Roles are namespaced and ClusterRoles can be used cluster wide. In this case we will create a ClusterRole to view Pods.
-The ClusterRole is not applied to all namespaces unless a ClusterRoleBinding is created.
+The ClusterRole is not applied to all namespaces unless a ClusterRoleBinding is created that binds the ClusterRole to a subject like a user, group, or Service Account.
 In this case, we will be specific and use a RoleBinding to bind the ClusterRole to a specific Namespace.
 
-Create a Pod reader role:
+Roles and ClusterRoles define a set of permissions to Kubernetes resource(s) e.g. create, list, get, and update Pods.
+
+2. Create a Pod reader ClusterRole:
 
 ```shell
 cat <<EOF > cr-pod-reader.yaml
@@ -36,9 +42,9 @@ Output:
 clusterrole.rbac.authorization.k8s.io/pod-viewer created
 ```
 
-RoleBindings and ClusterRoleBindings bind a role to a subject (user, group, service account)
+RoleBindings and ClusterRoleBindings bind a set of permisiones defined in a Role or ClusterRole to a subject (user, group, service account).
 
-Create a RoleBinding to bind the pod-viewer ClusterRole to a user `devconf` in the pod-view group.
+3. Create a RoleBinding to bind the pod-viewer ClusterRole to a user `devconf` in the `pod-view` group.
 
 ```shell
 cat <<EOF > rb-view-pods.yaml
@@ -46,7 +52,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: view-pods
-  namespace: secure-namespace
+  namespace: rbac-namespace
 subjects:
 - kind: User
   name: devconf
@@ -68,26 +74,26 @@ Output:
 rolebinding.rbac.authorization.k8s.io/view-pods created
 ```
 
-Test the devconf user and pod-view grou pif it can get pods in the secure-namespace Namespace:
+4. Test the devconf user and pod-view group if it can get pods in the rbac-namespace Namespace:
 
-`kubectl --as devconf --as-group pod-view get pods --namespace secure-namespace`
+`kubectl --as devconf --as-group pod-view get pods --namespace rbac-namespace`
 
 Output:
 ```shell
-No resources found in secure-namespace namespace.
+No resources found in rbac-namespace namespace.
 ```
 Success!
 
-Now test the user and group to get Pods in the kube-system namespace
+5. Now test the user and group to get Pods in the kube-system namespace
 `kubectl --as devconf --as-group pod-view get pods --namespace kube-system`
 
 Output:
 ```shell
 Error from server (Forbidden): pods is forbidden: User "devconf" cannot list resource "pods" in API group "" in the namespace "kube-system"
 ```
-The user and group can not get pods in the kube-system namespace.
+The `devconf` user in the `pod-view` group can not get Pods in the `kube-system` Namespace.
 
-Now check if the user and group can get Pods in the default namespace:
+6. Now check if the user and group can get Pods in the default namespace:
 
 `kubectl --as devconf --as-group pod-view get pods --namespace default`
 
@@ -98,18 +104,19 @@ Error from server (Forbidden): pods is forbidden: User "devconf" cannot list res
 
 The user and group can not get Pods in the default Namespace.
 
-Let's make sure our user can not create a Pod in the secure-namespace:
-`kubectl --as devconf --as-group pod-view run nginx-source --namespace secure-namespace --image nginx:1.27.0`
+7. Let's make sure our user can not create a Pod in the rbac-namespace:
+
+`kubectl --as devconf --as-group pod-view run nginx-source --namespace rbac-namespace --image nginx:1.27.0`
 
 Output:
 ```shell
-Error from server (Forbidden): pods is forbidden: User "devconf" cannot create resource "pods" in API group "" in the namespace "secure-namespace"
+Error from server (Forbidden): pods is forbidden: User "devconf" cannot create resource "pods" in API group "" in the namespace "rbac-namespace"
 ```
-Great, the user and group can not create Pods in the secure-namespace Namespace.
+Great, the user and group can not create Pods in the rbac-namespace Namespace.
 
-With a Pod viewer user and group, let's create the necessary Roles and RoleBindings for a user to create a workload Pod.
+With a `pod-viewer` user and group, let's create the necessary Roles and RoleBindings for a user to create a workload Pod.
 
-Create a Role to create, update, patch and delete Pods and Deployments in the secure-namespace Namespace.
+8. Create a Role to create, update, patch and delete Pods and Deployments in the rbac-namespace Namespace.
 
 ```shell
 cat <<EOF > cr-pod-creator.yaml
@@ -117,7 +124,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: pod-creator
-  namespace: secure-namespace
+  namespace: rbac-namespace
 rules:
 - apiGroups: [""]
   resources: ["pods","deployments"]
@@ -133,7 +140,7 @@ Output:
 role.rbac.authorization.k8s.io/pod-creator created
 ```
 
-Create the RoleBinding that binds the pod-creator Role to a user devconf and pod-creator group in the secure-namespace Namespace.
+9. Create the RoleBinding that binds the `pod-creator` Role to the `user` devconf and `pod-creator` group in the `rbac-namespace` Namespace.
 
 ```shell
 cat <<EOF > rb-create-pods.yaml
@@ -141,7 +148,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: create-pods
-  namespace: secure-namespace
+  namespace: rbac-namespace
 subjects:
 - kind: User
   name: devconf
@@ -156,7 +163,6 @@ roleRef:
 EOF
 ```
 
-Create the RoleBinding
 `kubectl apply -f rb-create-pods.yaml`
 
 Output:
@@ -164,13 +170,15 @@ Output:
 rolebinding.rbac.authorization.k8s.io/create-pods created
 ```
 
-Using the devconf user, let's create a Pod in the secure-namespace Namespace:
+10. Use the `devconf` user to create a Pod in the `rbac-namespace` Namespace:
 
-`kubectl --as devconf --as-group pod-creator run nginx --namespace secure-namespace --image nginx:1.27.0`
+`kubectl --as devconf --as-group pod-creator run nginx --namespace rbac-namespace --image nginx:1.27.0`
 
 Output:
 ```shell
 pod/nginx created
 ```
-Now we have a user than can create Pods in the secure-namespace Namespace.
+Now we have a user than can create Pods in the rbac-namespace Namespace.
 
+To summarize we defined permissions in several roles, one to view Pods and one to create Pods. 
+We bound the permissions to a user and group for a specific Namespace using a RoleBinding and tested the user and group to get Pods in various Namespaces and to create a Pod before and after permissions to create Pods were given.
