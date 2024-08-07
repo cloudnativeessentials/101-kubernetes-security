@@ -47,7 +47,7 @@ networking:
 EOF
 
 # create kind cluster using kind-config.yaml
-sg docker -c 'kind create cluster --config=kind-config.yaml'
+sg docker -c 'kind create cluster --image=kindest/node:v1.30.0 --config=kind-config.yaml'
 
 # install cilium cli
 echo "Installing cilium"
