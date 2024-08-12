@@ -35,7 +35,9 @@ Back to the Kubernetes Security Checklist item to not use the `system:masters` g
 Before we look to see which ClusterRoleBindings and RoleBindings may give rights to the `system:masters` group, let's take a look at ClusterRoleBindings and RoleBindings to see where we can find the subjects like users, groups, and Service Accounts.
 
 List all ClusterRoleBindings:
-`kubectl get clusterolebindings`
+```shell
+kubectl get clusterolebindings
+```
 
 Expected output (truncate):
 ```shell
@@ -58,7 +60,9 @@ You can find more information on the default ClusterRoles and ClusterRoleBinding
 
 2. Let's look into a description of ClusterRoleBinding `system:public-info-viewer`.
 
-`kubectl describe clusterrolebinding system:public-info-viewer `
+```shell
+kubectl describe clusterrolebinding system:public-info-viewer
+```
 
 Expected output:
 ```shell 
@@ -82,7 +86,9 @@ Both `system:authenticated` and `system:unauthenticated` are build-in groups.
 
 3. Let's take the manifest of the same ClusterRoleBinding `system:public-info-viewer`.
 
-`kubectl get ClusterRoleBinding system:public-info-viewer -o yaml`
+```shell
+kubectl get ClusterRoleBinding system:public-info-viewer -o yaml
+```
 
 Expected output:
 ```shell
@@ -112,7 +118,9 @@ subjects:
 
 4. Get the same manifest in json.
 
-`kubectl get ClusterRoleBinding system:public-info-viewer -o json`
+```shell
+kubectl get ClusterRoleBinding system:public-info-viewer -o json
+```
 
 Expected output:
 ```shell
@@ -318,7 +326,9 @@ Based on the output from `kubectl get clusterrolebindings -o json` that outputs 
 
 We can do so with the following command:
 
-`kubectl get clusterrolebindings -o json | jq '.items[] | select(.subjects[].kind=="Group" and .subjects[].name=="system:masters")'`
+```shell
+kubectl get clusterrolebindings -o json | jq '.items[] | select(.subjects[].kind=="Group" and .subjects[].name=="system:masters")'
+```
 
 Expected output:
 ```shell
@@ -358,7 +368,9 @@ According to the [`jq` manual](https://jqlang.github.io/jq/manual/), we can add 
 
 9. Update the query with `.subjects[]?` to not output errors if a ClusterRoleBinding has no subject.
 
-`kubectl get clusterrolebindings -o json | jq '.items[] | select(.subjects[]?.kind=="Group" and .subjects[].name=="system:masters")'`
+```shell
+kubectl get clusterrolebindings -o json | jq '.items[] | select(.subjects[]?.kind=="Group" and .subjects[].name=="system:masters")'
+```
 
 Expected output:
 ```shell
@@ -398,7 +410,9 @@ Great! Now there is no error at the end.
 
 We can use custom columns to output the important columns we would like to see from Kubernetes objects. Use the following command to output the ClusterRole and Subjects from the ClusterRoleBinding `cluster-admin`.
 
-`kubectl get clusterrolebindings cluster-admin -o custom-columns='ClusterRolBinding:.metadata.name,ClusterRole:.roleRef.name,Subject:.subjects[].name'`
+```shell
+kubectl get clusterrolebindings cluster-admin -o custom-columns='ClusterRolBinding:.metadata.name,ClusterRole:.roleRef.name,Subject:.subjects[].name'
+```
 
 Expected output:
 ```shell
@@ -421,7 +435,9 @@ Now we have a query to obtain only the name of ClusterRoleBinding(s).
 
 Let's use a subshell with the query to output names of ClusterRoleBindings that have `system:masters` Group in the Subject to the `kubectl` command that outputs custom columms to have a command that outputs ClusterRoleBindings with `system:masters` Group in the Subject and outputs the name of the ClusterRoleBinding, the name of the ClusterRole, the Subjects and any Labels -- labels can be helpful to determine what the ClusterRoleBinding is used for.
 
-`kubectl get clusterrolebindings $(kubectl get clusterrolebindings -o json | jq -r '.items[] | select(any(.subjects[]?;.kind=="Group" and .name=="system:masters")).metadata.name') -o custom-columns='ClusterRoleBinding:.metadata.name,ClusterRole:.roleRef.name,Subject:.subjects[].name,Labels:.metadata.labels'`
+```shell
+kubectl get clusterrolebindings $(kubectl get clusterrolebindings -o json | jq -r '.items[] | select(any(.subjects[]?;.kind=="Group" and .name=="system:masters")).metadata.name') -o custom-columns='ClusterRoleBinding:.metadata.name,ClusterRole:.roleRef.name,Subject:.subjects[].name,Labels:.metadata.labels'
+```
 
 Expected output:
 ```shell
@@ -434,7 +450,9 @@ Now we have a command to check if Kubernetes clusters have a ClusterRoleBinding 
 
 To check if RoleBindings use `system:masters` Group in the subject, we can convert our command to query RoleBindings:
 
-`kubectl get rolebindings $(kubectl get rolebindings -o json | jq -r '.items[] | select(any(.subjects[]?;.kind=="Group" and .name=="system:masters")).metadata.name') -o custom-columns='RoleBinding:.metadata.name,Role:.roleRef.name,Subject:.subjects[].name,Labels:.metadata.labels'`
+```shell
+kubectl get rolebindings $(kubectl get rolebindings -o json | jq -r '.items[] | select(any(.subjects[]?;.kind=="Group" and .name=="system:masters")).metadata.name') -o custom-columns='RoleBinding:.metadata.name,Role:.roleRef.name,Subject:.subjects[].name,Labels:.metadata.labels'
+```
 
 Expected output:
 ```shell
