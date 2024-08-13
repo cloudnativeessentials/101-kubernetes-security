@@ -160,6 +160,10 @@ Let's walk through a practical example of applying the `RuntimeDefault` seccomp 
 
 6. **Cleanup:**
 ```sh
+ kubectl delete pod runtime-default-demo -n seccomp-test
+```
+
+```sh
     kubectl delete namespace seccomp-test
 ```
 By following these steps, you can see how the `RuntimeDefault` seccomp profile helps in restricting certain syscalls, thus enhancing the security of your Kubernetes workloads. For further learning, you can explore this [tutorial](https://kubernetes.io/docs/tutorials/security/seccomp/).
