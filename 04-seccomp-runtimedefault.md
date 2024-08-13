@@ -158,5 +158,8 @@ Let's walk through a practical example of applying the `RuntimeDefault` seccomp 
              aspects of the newly created namespaces (such as configuring interfaces in the network namespace or mounting filesystems in the mount namespace) even when run unprivileged. As a mere convenience feature, it does not support more
              sophisticated use cases, such as mapping multiple ranges of UIDs and GIDs. This option implies --setgroups=deny and --user. This option is equivalent to --map-user=0 --map-group=0.
 
-    
+6. **Cleanup:**
+```sh
+    kubectl delete namespace seccomp-test
+```
 By following these steps, you can see how the `RuntimeDefault` seccomp profile helps in restricting certain syscalls, thus enhancing the security of your Kubernetes workloads. For further learning, you can explore this [tutorial](https://kubernetes.io/docs/tutorials/security/seccomp/).
