@@ -2,8 +2,8 @@
 
 ## Using RuntimeDefault as a seccomp profile
 Seccomp (secure computing mode) is a security feature in the Linux kernel that can restrict the syscalls a process can make. It operates by defining a filter that dictates which syscalls are allowed and which are denied for a particular process or set of processes. Seccomp can operate in various modes, including:
-- **Whitelist mode (SCMP_ACT_ALLOW):** Only explicitly allowed syscalls are permitted.
-- **Blacklist mode (SCMP_ACT_ERRNO):** Specific syscalls are denied, and all others are allowed.
+- **SCMP_ACT_ALLOW:** Only explicitly allowed syscalls are permitted.
+- **SCMP_ACT_ERRNO:** Specific syscalls are denied, and all others are allowed.
 
 ### What is the `RuntimeDefault` Seccomp Profile?
 
@@ -27,7 +27,7 @@ You can apply the `RuntimeDefault` seccomp profile to a Kubernetes Pod by specif
 Let's walk through a practical example of applying the `RuntimeDefault` seccomp profile in a Kubernetes workshop.
 
 #### Steps:
-1. **Create a Namespace for Testing:**
+1. **Create a Namespace for Seccomp Testing:**
     ```sh
     kubectl create namespace seccomp-test
     ```
