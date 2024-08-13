@@ -166,10 +166,10 @@ networkpolicy.networking.k8s.io/default-deny-all created
 9. Run the same test , from the `nginx-source` Pod try to reach the `nginx-target` Pod:
 
 ```shell
-kubectl exec nginx-source --namespace source -it -- curl --max-time 60 nginx-target.target.svc.cluster.local | head -n 4
+kubectl exec nginx-source --namespace source -it -- curl --max-time 30 nginx-target.target.svc.cluster.local | head -n 4
 ```
 
-We will see that the command times out in one minute.
+We will see that the command times out in 30s.
 Expected output:
 ```shell
 curl: (28) Failed to connect to 10.244.1.63 port 80 after 128918 ms: Couldn't connect to server
@@ -207,7 +207,7 @@ networkpolicy.networking.k8s.io/ingress-source-to-target created
 11. Run the same test. From the `nginx-source` Pod try to reach the `nginx-target` Pod:
 
 ```shell
-kubectl exec nginx-source --namespace source -it -- curl --max-time 60 nginx-target.target.svc.cluster.local | head -n 4
+kubectl exec nginx-source --namespace source -it -- curl --max-time 30 nginx-target.target.svc.cluster.local | head -n 4
 ```
 
 Expected output:
@@ -247,7 +247,7 @@ pod/nginx-new-source created
 14. Run a test, from `nginx-new-source` Pod try to reach the `nginx-target` Pod:
 
 ```shell
-kubectl exec nginx-new-source --namespace new-source -it -- curl --max-time 60 nginx-target.target.svc.cluster.local | head -n 4
+kubectl exec nginx-new-source --namespace new-source -it -- curl --max-time 30 nginx-target.target.svc.cluster.local | head -n 4
 ```
 
 Expected output:
@@ -261,7 +261,7 @@ Workloads from the `new-source` Namespace can not reach the `target` Namespace.
 15. Repeat the test from the `source` Namespace to verify the ingress Network Policy works. From the `nginx-source` Pod try to reach `nginx-target` Pod:
 
 ```shell
-kubectl exec nginx-source --namespace source -it -- curl --max-time 60 nginx-target.target.svc.cluster.local | head -n 4
+kubectl exec nginx-source --namespace source -it -- curl --max-time 30 nginx-target.target.svc.cluster.local | head -n 4
 ```
 
 Expected output:
@@ -279,7 +279,7 @@ We confirmed that ingress from only the `source` Namespace is allowed into the `
 From the `nginx-target` Pod, try to reach the `nginx-source` Pod:
 
 ```shell
-kubectl exec nginx-target --namespace target -it -- curl --max-time 60 nginx-source.source.svc.cluster.local | head -n 4
+kubectl exec nginx-target --namespace target -it -- curl --max-time 30 nginx-source.source.svc.cluster.local | head -n 4
 ```
 
 Expected output:
@@ -320,7 +320,7 @@ networkpolicy.networking.k8s.io/egress-target-to-source created
 (note: we are using the `nginx-source` Service DNS)
 
 ```shell
-kubectl exec nginx-target --namespace target -it -- curl --max-time 60 nginx-source.source.svc.cluster.local | head -n 4
+kubectl exec nginx-target --namespace target -it -- curl --max-time 30 nginx-source.source.svc.cluster.local | head -n 4
 ```
 
 Expected output:
