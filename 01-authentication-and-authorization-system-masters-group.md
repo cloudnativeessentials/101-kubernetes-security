@@ -37,7 +37,7 @@ Before we look to see which ClusterRoleBindings and RoleBindings may give rights
 List all ClusterRoleBindings:
 
 ```shell
-kubectl get clusterolebindings
+kubectl get clusterrolebindings
 ```
 
 Expected output (truncate):
