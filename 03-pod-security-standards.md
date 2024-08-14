@@ -58,6 +58,7 @@ namespace/secure-namespace created
 ```shell
 kubectl label ns secure-namespace pod-security.kubernetes.io/warn=baseline
 ```
+
 Expected output:
 ```shell
 namespace/secure-namespace  labeled
@@ -189,7 +190,9 @@ Expected output:
 ```shell
 pod/nginx created
 ```
-Great, no warning
+We don't see the warning this time.
+
+10. Verify the Pod is running:
 
 ```shell
 kubectl get pods -n secure-namespace
@@ -201,7 +204,7 @@ NAME    READY   STATUS    RESTARTS   AGE
 nginx   1/1     Running   0          74s
 ```
 
-10. Delete the Pod:
+11. Delete the Pod:
 
 ```shell
 kubectl delete pod nginx -n secure-namespace
@@ -212,7 +215,7 @@ Expected output:
 pod "nginx" deleted
 ```
 
-11. Label the `secure-namespace` Namespace so that the `restricted` policy is enforced in `warn` mode.
+12. Label the `secure-namespace` Namespace so that the `restricted` policy is enforced in `warn` mode.
 
 ```shell
 kubectl label namespace secure-namespace pod-security.kubernetes.io/warn=restricted --overwrite
@@ -223,7 +226,7 @@ Expected output:
 namespace/secure-namespace labeled
 ```
 
-12. Check the labels on the `secure-namespace` Namespace:
+13. Check the labels on the `secure-namespace` Namespace:
 
 ```shell
 kubectl get namespace secure-namespace --show-labels
@@ -239,7 +242,7 @@ The `secure-namespace` Namespace has two Pod Security Standards policies applied
 - `baseline` policy in `enforce` mode
 - `restricted` policy in `warn` mode
 
-13. Create a Pod that satisfies the `baseline` policy but not the `restricted` policy:
+14. Create a Pod that satisfies the `baseline` policy but not the `restricted` policy:
 
 ```shell
 cat <<EOF | kubectl apply -f -
@@ -267,7 +270,7 @@ pod/nginx created
 
 Looks like the Pod was created but we received a warning that the Pod violates the `restricted` policy.
 
-14. Check the Pods in the `secure-namespace` Namespace:
+15. Check the Pods in the `secure-namespace` Namespace:
 
 ```shell
 kubectl get pods -n secure-namespace
@@ -280,7 +283,7 @@ nginx   1/1     Running   0          70s
 ```
 
 
-15. Delete the Pod:
+16. Delete the Pod:
 
 ```shell
 kubectl delete pod nginx -n secure-namespace
@@ -292,7 +295,7 @@ Expected output:
 pod "nginx" deleted
 ```
 
-16. Before enforcing a policy to Namespaces, we want to check if the policy may disrupt running workloads. We can use the `--dry-run` and `--all` options to see if we were to enforce the `restricted` policy.
+17. Before enforcing a policy to Namespaces, we want to check if the policy may disrupt running workloads. We can use the `--dry-run` and `--all` options to see if we were to enforce the `restricted` policy.
 
 ```shell
 kubectl label --dry-run=server --overwrite ns --all pod-security.kubernetes.io/enforce=restricted
@@ -319,7 +322,7 @@ namespace/secure-namespace labeled (server dry run)
 Workloads will be affected. Existing Pods that violate the `restricted` policy will keep running but new Pods that violate the `restricted` policy will not be created.
 
 
-17. Cleanup
+18. Cleanup
 
 Delete the `secure-namespace` Namespace:
 
@@ -331,3 +334,6 @@ Expected output:
 ```shell
 namespace "secure-namespace" deleted
 ```
+
+To summarize, Pod Security Standards defines policies to use as security guardrails for Pods.
+Pod Security Admission Controller enforces Pod Security Standards.
