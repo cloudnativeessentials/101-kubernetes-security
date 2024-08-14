@@ -35,6 +35,7 @@ Back to the Kubernetes Security Checklist item to not use the `system:masters` g
 Before we look to see which ClusterRoleBindings and RoleBindings may give rights to the `system:masters` group, let's take a look at ClusterRoleBindings and RoleBindings to see where we can find the subjects like users, groups, and Service Accounts.
 
 List all ClusterRoleBindings:
+
 ```shell
 kubectl get clusterolebindings
 ```
@@ -163,7 +164,9 @@ With the ability to get the manifest in json, we can use a command-line json pro
 
 5. Retrieve all ClusterRoleBindings in json.
 
-`kubectl get clusterrolebindings -o json`
+```shell
+kubectl get clusterrolebindings -o json
+```
 
 Expected output (truncated):
 ```shell
@@ -269,7 +272,9 @@ The output in json is a list of all ClusterRoleBinding manifests.
 
 6. One simple way to see if there is a ClusterRoleBinding that binds rights to the `system:masters` group is with grep.
 
-`kubectl get clusterrolebindings -o json | grep "system:masters"`
+```shell
+kubectl get clusterrolebindings -o json | grep "system:masters"
+```
 
 Expected output:
 ```shell
@@ -424,7 +429,9 @@ Great! We can output in easy-to-ready columns!
 
 Let's use `jq`'s any() function as a filter to produce the name(s) of ClusterRoleBindings that have `system:masters` as a Group in the Subject.
 
-`kubectl get clusterrolebindings -o json | jq -r '.items[] | select(any(.subjects[]?;.kind=="Group" and .name=="system:masters")).metadata.name'`
+```shell
+kubectl get clusterrolebindings -o json | jq -r '.items[] | select(any(.subjects[]?;.kind=="Group" and .name=="system:masters")).metadata.name'
+```
 
 Expected output:
 ```shell
