@@ -19,7 +19,7 @@ sudo yum install -y jq
 
 # install kind for AMD64/x86_64
 echo "Installing kind"
-curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 
@@ -48,7 +48,7 @@ networking:
 EOF
 
 # create kind cluster using kind-config.yaml
-sg docker -c 'kind create cluster --image=kindest/node:v1.30.0 --config=kind-config.yaml'
+sg docker -c 'kind create cluster --image=kindest/node:v1.34.0 --config=kind-config.yaml'
 
 # install cilium cli
 echo "Installing cilium"
